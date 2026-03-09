@@ -5,6 +5,7 @@ import lombok.*;
 
 @Entity
 @Getter @Setter
+@Table(name = "users") // Vì user là từ khóa đặc biệt
 public class User {
 
     @Id
