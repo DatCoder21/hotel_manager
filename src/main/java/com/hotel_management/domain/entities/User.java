@@ -1,21 +1,27 @@
 package com.hotel_management.domain.entities;
 
+import com.hotel_management.domain.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "users")
 @Getter @Setter
-@Table(name = "users") // Vì user là từ khóa đặc biệt
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "full_name")
     private String fullName;
+
     private String username;
     private String password;
     private String email;
     private String phone;
-    private String role; // ADMIN, RECEPTIONIST, STAFF
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.CUSTOMER;
 }

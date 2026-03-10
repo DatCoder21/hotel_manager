@@ -1,5 +1,6 @@
 package com.hotel_management.app.controllers.user;
 
+import com.hotel_management.app.requests.user.LoginRequest;
 import com.hotel_management.app.requests.user.UserCreateRequest;
 import com.hotel_management.app.responses.user.UserResponse;
 import com.hotel_management.domain.services.UserService;
@@ -24,4 +25,10 @@ public class UserController {
     public List<UserResponse> getAll() {
         return userService.getAllUsers();
     }
+
+    @PostMapping("/login")
+    public UserResponse login(@RequestBody LoginRequest request) {
+        return userService.login(request);
+    }
+
 }

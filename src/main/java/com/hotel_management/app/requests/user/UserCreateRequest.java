@@ -1,5 +1,6 @@
 package com.hotel_management.app.requests.user;
 
+import com.hotel_management.domain.enums.Role;
 import lombok.Data;
 
 @Data
@@ -9,5 +10,4 @@ public class UserCreateRequest {
     private String password;
     private String email;
     private String phone;
-    private String role;
 }

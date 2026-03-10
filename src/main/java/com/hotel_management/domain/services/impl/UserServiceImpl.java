@@ -1,8 +1,10 @@
 package com.hotel_management.domain.services.impl;
 
+import com.hotel_management.app.requests.user.LoginRequest;
 import com.hotel_management.app.requests.user.UserCreateRequest;
 import com.hotel_management.app.responses.user.UserResponse;
 import com.hotel_management.domain.entities.User;
+import com.hotel_management.domain.enums.Role;
 import com.hotel_management.domain.repositories.UserRepository;
 import com.hotel_management.domain.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse createUser(UserCreateRequest request) {
         User user = modelMapper.map(request, User.class);
+        user.setRole(Role.CUSTOMER);
         User saved = userRepository.save(user);
         return modelMapper.map(saved, UserResponse.class);
     }
@@ -32,5 +35,18 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .map(u -> modelMapper.map(u, UserResponse.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserResponse login(LoginRequest request) {
+
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("Username not found"));
+
+        if (!user.getPassword().equals(request.getPassword())) {
+            throw new RuntimeException("Wrong password");
+        }
+
+        return modelMapper.map(user, UserResponse.class);
     }
 }
