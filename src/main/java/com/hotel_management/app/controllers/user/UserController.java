@@ -2,9 +2,12 @@ package com.hotel_management.app.controllers.user;
 
 import com.hotel_management.app.requests.user.LoginRequest;
 import com.hotel_management.app.requests.user.UserCreateRequest;
+import com.hotel_management.app.responses.user.LoginResponse;
 import com.hotel_management.app.responses.user.UserResponse;
 import com.hotel_management.domain.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,9 +29,19 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+//        try {
+//            UserResponse response = userService.login(request);
+//            return ResponseEntity.ok(response);
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                    .body(e.getMessage());
+//        }
+//    }
+
     @PostMapping("/login")
-    public UserResponse login(@RequestBody LoginRequest request) {
+    public LoginResponse login(@RequestBody LoginRequest request) {
         return userService.login(request);
     }
-
 }
