@@ -11,7 +11,7 @@ public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
@@ -20,7 +20,7 @@ public class Booking {
     private String note;
 
     @ManyToOne
-    @JoinColumn(name = "guest_id")
+    @JoinColumn(name = "user_id")
     private User guest;
 
     @ManyToOne

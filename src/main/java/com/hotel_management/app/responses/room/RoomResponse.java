@@ -1,14 +1,18 @@
 package com.hotel_management.app.responses.room;
 
+import com.hotel_management.domain.enums.RoomCategory;
+import com.hotel_management.domain.enums.RoomStatus;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
 public class RoomResponse {
-    private Long id;
+    private int id;
     private String roomNumber;
-    private String type;
+    private RoomStatus status;
+    private RoomCategory category;
     private Double price;
-    private String status;
 }
