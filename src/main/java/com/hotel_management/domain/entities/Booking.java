@@ -1,5 +1,6 @@
 package com.hotel_management.domain.entities;
 
+import com.hotel_management.domain.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +17,11 @@ public class Booking {
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private Double totalPrice;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BookingStatus status;
+
     private String note;
 
     @ManyToOne
