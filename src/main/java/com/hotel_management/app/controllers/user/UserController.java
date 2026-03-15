@@ -8,6 +8,7 @@ import com.hotel_management.domain.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,9 +25,23 @@ public class UserController {
         return userService.createUser(request);
     }
 
-    @GetMapping
-    public List<UserResponse> getAll() {
-        return userService.getAllUsers();
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/customer")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    public List<UserResponse> getAllCustomer() {
+        return userService.getAllCustomer();
+    }
+
+    @GetMapping("/staff")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    public List<UserResponse> getAllStaff() {
+        return userService.getAllStaff();
     }
 
 //    @PostMapping("/login")

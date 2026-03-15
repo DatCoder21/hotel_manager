@@ -3,6 +3,7 @@ package com.hotel_management.domain.services.impl;
 import com.hotel_management.app.requests.booking.BookingRequest;
 import com.hotel_management.app.responses.booking.BookingResponse;
 import com.hotel_management.domain.entities.Booking;
+import com.hotel_management.domain.entities.Invoice;
 import com.hotel_management.domain.entities.Room;
 import com.hotel_management.domain.entities.User;
 import com.hotel_management.domain.enums.BookingStatus;
@@ -68,14 +69,20 @@ public class BookingServiceImpl implements BookingService {
         booking.setTotalPrice(totalPrice);
         booking.setStatus(BookingStatus.PENDING);
 
-        bookingRepository.save(booking);
+        // ✅ Tạo hóa đơn tự động
+        Invoice invoice = new Invoice();
+        invoice.setBooking(booking);
+        booking.setInvoice(invoice);
 
-        // 🔥 Quan trọng: đổi trạng thái phòng
+        Booking saved = bookingRepository.save(booking);
+
+        // 🔥 Đổi trạng thái phòng
         room.setStatus(RoomStatus.OCCUPIED);
         roomRepository.save(room);
 
-        return mapToResponse(booking);
+        return mapToResponse(saved);
     }
+
 
     private BookingResponse mapToResponse(Booking b) {
         return BookingResponse.builder()
@@ -105,6 +112,38 @@ public class BookingServiceImpl implements BookingService {
             room.setStatus(RoomStatus.AVAILABLE);
             roomRepository.save(room);
         }
+
+        bookingRepository.save(booking);
+
+        return mapToResponse(booking);
+    }
+
+    @Override
+    @Transactional
+    public BookingResponse customerCheckIn(Integer bookingId) {
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        booking.setStatus(BookingStatus.CHECKED_IN);
+
+        bookingRepository.save(booking);
+
+        return mapToResponse(booking);
+    }
+
+    @Override
+    @Transactional
+    public BookingResponse customerCheckOut(Integer bookingId) {
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        booking.setStatus(BookingStatus.CHECKED_OUT);
+
+        Room room = booking.getRoom();
+        room.setStatus(RoomStatus.AVAILABLE);
+        roomRepository.save(room);
 
         bookingRepository.save(booking);
 

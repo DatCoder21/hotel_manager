@@ -31,4 +31,7 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room;
+
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
+    private Invoice invoice;
 }

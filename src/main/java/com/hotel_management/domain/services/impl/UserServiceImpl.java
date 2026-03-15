@@ -46,13 +46,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> getAllUsers() {
-        return userRepository.findAll()
+    public void deleteUser(Integer id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        userRepository.delete(user);
+    }
+
+
+    @Override
+    public List<UserResponse> getAllCustomer() {
+        return userRepository.findAllByRole(Role.CUSTOMER)
                 .stream()
                 .map(u -> modelMapper.map(u, UserResponse.class))
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<UserResponse> getAllStaff() {
+        return userRepository.findAllByRole(Role.STAFF)
+                .stream()
+                .map(u -> modelMapper.map(u, UserResponse.class))
+                .collect(Collectors.toList());
+    }
     @Override
     public LoginResponse login(LoginRequest request) {
 

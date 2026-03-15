@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface RoomTypeRepository extends JpaRepository<RoomType, Integer> {
+    public interface RoomTypeRepository extends JpaRepository<RoomType, Integer> {
     Optional<RoomType> findByCategory(RoomCategory category);
 
     List<RoomType> findAllByCategory(RoomCategory category);

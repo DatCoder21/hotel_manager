@@ -9,8 +9,9 @@ import java.util.List;
 
 public interface UserService {
     UserResponse createUser(UserCreateRequest request);
-    List<UserResponse> getAllUsers();
-
+    void deleteUser(Integer id);
+    List<UserResponse> getAllCustomer();
+    List<UserResponse> getAllStaff();
     LoginResponse login(LoginRequest request);
 
 }

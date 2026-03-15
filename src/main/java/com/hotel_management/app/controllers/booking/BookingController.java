@@ -40,4 +40,20 @@ public class BookingController {
     ) {
         return bookingService.updateBookingStatus(id, status);
     }
+
+    @PreAuthorize("hasAnyRole('CUSTOMER')")
+    @PutMapping("/checkin/{id}")
+    public BookingResponse customerCheckIn(
+            @PathVariable Integer id
+    ) {
+        return bookingService.customerCheckIn(id);
+    }
+
+    @PreAuthorize("hasAnyRole('CUSTOMER')")
+    @PutMapping("/checkout/{id}")
+    public BookingResponse customerCheckOut(
+            @PathVariable Integer id
+    ) {
+        return bookingService.customerCheckOut(id);
+    }
 }
