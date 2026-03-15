@@ -26,9 +26,7 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
     private final BookingRepository bookingRepository;
     private final ModelMapper modelMapper;
 
-    // ==============================
-    // 🔍 XEM HÓA ĐƠN
-    // ==============================
+    // XEM HÓA ĐƠN
     @Override
     public InvoiceResponse getInvoiceByBooking(int bookingId) {
 
@@ -43,9 +41,7 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
         return mapToResponse(invoice);
     }
 
-    // ==============================
-    // 💳 THANH TOÁN
-    // ==============================
+    // THANH TOÁN
     @Transactional
     @Override
     public void payInvoice(int invoiceId) {
@@ -68,9 +64,7 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
         invoiceRepository.save(invoice);
     }
 
-    // ==============================
-    // 🧮 TÍNH TỔNG
-    // ==============================
+    // TÍNH TỔNG
     private double calculateTotal(Invoice invoice) {
 
         double foodTotal = invoice.getItems()
@@ -83,9 +77,7 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
         return foodTotal + roomTotal;
     }
 
-    // ==============================
-    // 🔄 MAP RESPONSE
-    // ==============================
+    // MAP RESPONSE
     private InvoiceResponse mapToResponse(Invoice invoice) {
 
         InvoiceResponse res = modelMapper.map(invoice, InvoiceResponse.class);
