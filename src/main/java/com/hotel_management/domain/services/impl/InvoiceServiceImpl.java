@@ -68,7 +68,8 @@ public class InvoiceServiceImpl implements InvoiceService {
             invoice.setTotalAmount(0.0);
         }
         invoice.setTotalAmount(invoice.getTotalAmount() + subtotal);
-
+        booking.setTotalPrice(booking.getTotalPrice() + item.getSubtotal());
+        bookingRepository.saveAndFlush(booking);
         invoiceRepository.save(invoice);
     }
 

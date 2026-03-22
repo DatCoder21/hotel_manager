@@ -17,21 +17,21 @@ public class BookingController {
 
     private final BookingService bookingService;
 
-    // ✅ User đặt phòng
+    // User đặt phòng
     @PreAuthorize("hasAnyRole('CUSTOMER')")
     @PostMapping
     public BookingResponse create(@RequestBody BookingRequest request) {
         return bookingService.createBooking(request);
     }
 
-    // ✅ User xem booking của mình
+    // User xem booking của mình
     @PreAuthorize("hasAnyRole('CUSTOMER')")
     @GetMapping("/my")
     public List<BookingResponse> myBookings() {
         return bookingService.getMyBookings();
     }
 
-    // ✅ Admin cập nhật trạng thái booking
+    // Admin cập nhật trạng thái booking
     @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @PutMapping("/{id}/status")
     public BookingResponse updateStatus(
@@ -55,5 +55,12 @@ public class BookingController {
             @PathVariable Integer id
     ) {
         return bookingService.customerCheckOut(id);
+    }
+
+    //Lay danh sach tat ca cac booking
+    @GetMapping("")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    public List<BookingResponse> getAllBookings() {
+        return bookingService.getAllBookings();
     }
 }

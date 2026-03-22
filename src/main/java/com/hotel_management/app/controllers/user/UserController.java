@@ -2,8 +2,10 @@ package com.hotel_management.app.controllers.user;
 
 import com.hotel_management.app.requests.user.LoginRequest;
 import com.hotel_management.app.requests.user.UserCreateRequest;
+import com.hotel_management.app.requests.user.UserUpdateRequest;
 import com.hotel_management.app.responses.user.LoginResponse;
 import com.hotel_management.app.responses.user.UserResponse;
+import com.hotel_management.domain.services.JwtService;
 import com.hotel_management.domain.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final JwtService jwtService;
 
     @PostMapping
     public UserResponse create(@RequestBody UserCreateRequest request) {
@@ -59,4 +62,28 @@ public class UserController {
     public LoginResponse login(@RequestBody LoginRequest request) {
         return userService.login(request);
     }
+
+    // Lấy thông tin của tôi
+    @GetMapping("/me")
+    public UserResponse getMyInfo(
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        String token = authHeader.replace("Bearer ", "");
+        String username = jwtService.extractUsername(token);
+
+        return userService.getMyInfo(username);
+    }
+
+    // Cập nhật thông tin của tôi
+    @PutMapping("/me")
+    public UserResponse updateMyInfo(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody UserUpdateRequest request
+    ) {
+        String token = authHeader.replace("Bearer ", "");
+        String username = jwtService.extractUsername(token);
+
+        return userService.updateMyInfo(username, request);
+    }
+
 }

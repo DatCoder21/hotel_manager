@@ -48,4 +48,11 @@ public class FoodController {
     ) {
         return foodService.getFoodsByCategory(category);
     }
+
+    //Sua gia tien
+    @PutMapping("/{id}/price")
+    public FoodResponse updatePrice(@PathVariable int id,
+                                    @RequestParam double price) {
+        return foodService.updatePrice(id, price);
+    }
 }

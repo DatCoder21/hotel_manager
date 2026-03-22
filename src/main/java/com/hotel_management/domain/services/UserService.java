@@ -2,6 +2,7 @@ package com.hotel_management.domain.services;
 
 import com.hotel_management.app.requests.user.LoginRequest;
 import com.hotel_management.app.requests.user.UserCreateRequest;
+import com.hotel_management.app.requests.user.UserUpdateRequest;
 import com.hotel_management.app.responses.user.LoginResponse;
 import com.hotel_management.app.responses.user.UserResponse;
 
@@ -13,5 +14,6 @@ public interface UserService {
     List<UserResponse> getAllCustomer();
     List<UserResponse> getAllStaff();
     LoginResponse login(LoginRequest request);
-
+    UserResponse getMyInfo(String username);
+    UserResponse updateMyInfo(String username, UserUpdateRequest request);
 }

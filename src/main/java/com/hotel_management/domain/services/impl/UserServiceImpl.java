@@ -2,6 +2,7 @@ package com.hotel_management.domain.services.impl;
 
 import com.hotel_management.app.requests.user.LoginRequest;
 import com.hotel_management.app.requests.user.UserCreateRequest;
+import com.hotel_management.app.requests.user.UserUpdateRequest;
 import com.hotel_management.app.responses.user.LoginResponse;
 import com.hotel_management.app.responses.user.UserResponse;
 import com.hotel_management.domain.entities.User;
@@ -9,6 +10,7 @@ import com.hotel_management.domain.enums.Role;
 import com.hotel_management.domain.repositories.UserRepository;
 import com.hotel_management.domain.services.JwtService;
 import com.hotel_management.domain.services.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,12 +47,14 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(saved, UserResponse.class);
     }
 
+    @Transactional
     @Override
     public void deleteUser(Integer id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found");
+        }
 
-        userRepository.delete(user);
+        userRepository.deleteById(id);
     }
 
 
@@ -69,6 +73,7 @@ public class UserServiceImpl implements UserService {
                 .map(u -> modelMapper.map(u, UserResponse.class))
                 .collect(Collectors.toList());
     }
+
     @Override
     public LoginResponse login(LoginRequest request) {
 
@@ -79,8 +84,30 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Wrong password");
         }
 
-// đúng mật khẩu → tạo JWT
+        // đúng mật khẩu → tạo JWT
         String token = jwtService.generateToken(user.getUsername());
         return new LoginResponse(token);
+    }
+
+    @Override
+    public UserResponse getMyInfo(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return modelMapper.map(user, UserResponse.class);
+    }
+
+    @Override
+    public UserResponse updateMyInfo(String username, UserUpdateRequest request) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // cập nhật thông tin
+        user.setFullName(request.getFullName());
+        user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
+
+        User saved = userRepository.save(user);
+        return modelMapper.map(saved, UserResponse.class);
     }
 }

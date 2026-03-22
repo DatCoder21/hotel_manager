@@ -17,6 +17,8 @@ public class InvoiceResponse {
 
     private Double totalAmount;
 
+    private String status;
+
     // Danh sách món trong hóa đơn
     private List<InvoiceItemResponse> items;
 }

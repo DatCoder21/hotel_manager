@@ -13,7 +13,7 @@ import java.util.List;
 public class RoomType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Enumerated(EnumType.STRING)
     private RoomCategory category;   // STANDARD / DELUXE / SUITE

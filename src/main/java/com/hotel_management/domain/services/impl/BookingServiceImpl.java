@@ -15,10 +15,13 @@ import com.hotel_management.domain.services.BookingService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,50 +38,58 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingResponse createBooking(BookingRequest request) {
 
-        // 🔹 Lấy user từ token
+        // Lấy user từ token
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 🔹 Lấy phòng
+        // Lấy phòng
         Room room = roomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Room not found"));
 
-        // 🔹 Kiểm tra phòng trống
+        LocalDate checkIn = request.getCheckInDate();
+        LocalDate checkOut = request.getCheckOutDate();
+
+        // Validate ngày
+        long days = ChronoUnit.DAYS.between(checkIn, checkOut);
+        if (days <= 0) {
+            throw new RuntimeException("Check-out date must be after check-in date");
+        }
+
+        // Check trùng lịch
+        List<Booking> conflicts = bookingRepository.findConflictingBookings(
+                room.getId(), checkIn, checkOut
+        );
+
+        if (!conflicts.isEmpty()) {
+            throw new RuntimeException("Room already booked for selected dates");
+        }
+
         if (room.getStatus() != RoomStatus.AVAILABLE) {
             throw new RuntimeException("Room is not available");
         }
 
-        // 🔹 Tính tiền
-        long days = ChronoUnit.DAYS.between(
-                request.getCheckInDate(),
-                request.getCheckOutDate()
-        );
-
+        // Tính tiền theo số đêm
         double totalPrice = days * room.getRoomType().getPrice();
 
-        // 🔹 Tạo booking
+        // Tạo booking
         Booking booking = new Booking();
         booking.setGuest(user);
         booking.setRoom(room);
-        booking.setCheckInDate(request.getCheckInDate());
-        booking.setCheckOutDate(request.getCheckOutDate());
+        booking.setCheckInDate(checkIn);
+        booking.setCheckOutDate(checkOut);
         booking.setNote(request.getNote());
         booking.setTotalPrice(totalPrice);
         booking.setStatus(BookingStatus.PENDING);
 
-        // ✅ Tạo hóa đơn tự động
+        // Tạo hóa đơn
         Invoice invoice = new Invoice();
         invoice.setBooking(booking);
         booking.setInvoice(invoice);
 
         Booking saved = bookingRepository.save(booking);
-
-        // 🔥 Đổi trạng thái phòng
-        room.setStatus(RoomStatus.OCCUPIED);
-        roomRepository.save(room);
 
         return mapToResponse(saved);
     }
@@ -106,7 +117,6 @@ public class BookingServiceImpl implements BookingService {
 
         booking.setStatus(status);
 
-        // ✅ Nếu khách trả phòng → phòng trống lại
         if (status == BookingStatus.CHECKED_OUT || status == BookingStatus.CANCELLED) {
             Room room = booking.getRoom();
             room.setStatus(RoomStatus.AVAILABLE);
@@ -114,7 +124,6 @@ public class BookingServiceImpl implements BookingService {
         }
 
         bookingRepository.save(booking);
-
         return mapToResponse(booking);
     }
 
@@ -126,6 +135,9 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
         booking.setStatus(BookingStatus.CHECKED_IN);
+
+        Room room = booking.getRoom();
+        roomRepository.save(room);
 
         bookingRepository.save(booking);
 
@@ -160,5 +172,29 @@ public class BookingServiceImpl implements BookingService {
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
+    }
+    @Override
+    public List<BookingResponse> getAllBookings() {
+        return bookingRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    // AUTO CHECKOUT WHEN EXPIRE
+    @Scheduled(cron = "0 0 0 * * ?") // chạy 00:00 mỗi ngày
+    @Transactional
+    public void autoCheckoutExpiredBookings() {
+
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+
+        List<Booking> expired = bookingRepository.findExpiredBookings(today);
+
+        for (Booking b : expired) {
+            b.setStatus(BookingStatus.CHECKED_OUT);
+
+            Room room = b.getRoom();
+            room.setStatus(RoomStatus.AVAILABLE);
+        }
     }
 }

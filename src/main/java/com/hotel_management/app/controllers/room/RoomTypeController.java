@@ -17,7 +17,7 @@ public class RoomTypeController {
 
     private final RoomTypeService roomTypeService;
 
-    // ✅ Chỉnh giá
+    // Chỉnh giá
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{category}/price")
     public RoomTypeResponse updatePrice(
@@ -27,7 +27,7 @@ public class RoomTypeController {
         return roomTypeService.updatePrice(category, request.getPrice());
     }
 
-    // ✅ Xem theo loại phòng
+    // Xem theo loại phòng
     @GetMapping("/{category}")
     public List<RoomTypeResponse> getByCategory(
             @PathVariable RoomCategory category

@@ -12,4 +12,5 @@ public interface BookingService {
     BookingResponse customerCheckIn(Integer bookingId);
     BookingResponse customerCheckOut(Integer bookingId);
     List<BookingResponse> getMyBookings();
+    List<BookingResponse> getAllBookings();
 }

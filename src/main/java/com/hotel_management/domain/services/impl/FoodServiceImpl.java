@@ -95,4 +95,15 @@ public class FoodServiceImpl implements FoodService {
                 .category(f.getFoodType().getCategory().name()) // enum -> String
                 .build();
     }
+
+    @Override
+    public FoodResponse updatePrice(int foodId, double price) {
+        Food food = foodRepository.findById(foodId)
+                .orElseThrow(() -> new RuntimeException("Food not found"));
+
+        food.setPrice(price);
+
+        Food saved = foodRepository.save(food);
+        return mapToResponse(saved);
+    }
 }

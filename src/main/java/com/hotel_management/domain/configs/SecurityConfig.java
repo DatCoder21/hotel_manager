@@ -23,6 +23,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> {})   // ✅ bật CORS
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/users/login", "/api/users").permitAll()
                         .requestMatchers("/api/bookings/**").authenticated()
@@ -32,6 +33,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

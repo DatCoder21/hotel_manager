@@ -11,4 +11,5 @@ public interface FoodService {
     void deleteFood(int foodId);
     FoodResponse increaseQuantity(int foodId, int amount);
     List<FoodResponse> getFoodsByCategory(FoodCategory category);
+    FoodResponse updatePrice(int foodId, double price);
 }
