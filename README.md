@@ -121,57 +121,89 @@ Querry:
     ('Orange Juice', 50, 45000, 4),
     ('Coffee', 60, 40000, 4);
 
+
+# 🏨 Hotel Management System — API Documentation
 ## API Endpoints
+## 👤 User APIs — `/api/users`
 
-### Auth
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/users` | Create new user |
+| POST | `/api/users/login` | User login (get JWT) |
+| DELETE | `/api/users/{id}` | Delete user (ADMIN) |
+| GET | `/api/users/customer` | Get all customers (ADMIN, STAFF) |
+| GET | `/api/users/staff` | Get all staff (ADMIN, STAFF) |
+| GET | `/api/users/me` | Get my profile |
+| PUT | `/api/users/me` | Update my profile |
 
-| Method | Endpoint | Description        |
-| ------ | -------- | ------------------ |
-| POST   | Register | Create new account |
-| POST   | Login    | Authenticate user  |
+---
 
-### Rooms
+## 🏨 Room APIs — `/api/rooms`
 
-| Method | Endpoint              | Description              |
-| ------ | --------------------- | ------------------------ |
-| GET    | GetListRoom           | List all rooms           |
-| GET    | GetListRoomByCategory | Filter rooms by category |
-| PUT    | Update Room Status    | Change room status       |
-| PUT    | FixRoomPrice          | Update room type price   |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/rooms` | Get all rooms |
+| PUT | `/api/rooms/{id}/status?status=` | Update room status (ADMIN, STAFF) |
+| GET | `/api/rooms/available?category=&checkIn=&checkOut=` | Find available rooms |
 
-### 📅 Booking
+---
 
-| Method | Endpoint                      | Description               |
-| ------ | ----------------------------- | ------------------------- |
-| POST   | Booking Room                  | Customer books room       |
-| PUT    | Admin Edit Booking Status     | Staff/Admin update status |
-| GET    | See My Booking                | Customer bookings         |
-| GET    | Customer View Booking History | Booking history           |
+## 🛏️ Room Type APIs — `/api/room-types`
 
-### 🍽 Food
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| PUT | `/api/room-types/{category}/price` | Update room type price (ADMIN) |
+| GET | `/api/room-types/{category}` | Get rooms by category |
 
-| Method | Endpoint              | Description       |
-| ------ | --------------------- | ----------------- |
-| POST   | Add Food              | Add new food item |
-| GET    | GetListFoodByCategory | Filter food       |
-| PUT    | Add Food Number       | Update quantity   |
-| DEL    | Delete Food           | Remove food item  |
-| POST   | Customer Booking Food | Order food        |
+---
 
-### 🧾 Invoice
+## 📅 Booking APIs — `/api/bookings`
 
-| Method | Endpoint              | Description          |
-| ------ | --------------------- | -------------------- |
-| GET    | Customer View Invoice | View invoice details |
-| POST   | Customer Pay Invoice  | Pay invoice          |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/bookings` | Create booking (CUSTOMER) |
+| GET | `/api/bookings/my` | Get my bookings (CUSTOMER) |
+| PUT | `/api/bookings/{id}/status?status=` | Update booking status (ADMIN, STAFF) |
+| PUT | `/api/bookings/checkin/{id}` | Customer check-in |
+| PUT | `/api/bookings/checkout/{id}` | Customer check-out |
+| GET | `/api/bookings` | Get all bookings (ADMIN, STAFF) |
 
-### Users
+---
 
-| Method | Endpoint        | Description    |
-| ------ | --------------- | -------------- |
-| GET    | GetListCustomer | List customers |
-| GET    | GetListStaff    | List staff     |
-| DEL    | Delete Users    | Remove user    |
+## 🍽️ Food APIs — `/api/foods`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/foods` | Add new food (ADMIN, STAFF) |
+| DELETE | `/api/foods/{id}` | Delete food (ADMIN, STAFF) |
+| PUT | `/api/foods/{id}/increase?amount=` | Increase food quantity (ADMIN, STAFF) |
+| GET | `/api/foods/category/{category}` | Get foods by category |
+| PUT | `/api/foods/{id}/price?price=` | Update food price |
+
+---
+
+## 🧾 Invoice APIs — `/api/invoices`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/invoices/booking/{bookingId}/foods/{foodId}?quantity=` | Add food to invoice (order food) |
+| GET | `/api/invoices/booking/{bookingId}/history` | Get ordered food history |
+
+---
+
+## 💳 Invoice Management APIs — `/api/invoice-management`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/invoice-management/booking/{bookingId}` | Get invoice by booking |
+| POST | `/api/invoice-management/{invoiceId}/pay` | Pay invoice |
+
+---
+
+## 🔐 Roles
+- **ADMIN**: Full access
+- **STAFF**: Manage rooms, foods, bookings
+- **CUSTOMER**: Booking, check-in/out, order food, view profile
 
 ---
 
