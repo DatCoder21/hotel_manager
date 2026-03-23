@@ -67,7 +67,59 @@ Relationships:
 * One Invoice → Many InvoiceItems
 * One FoodType → Many Food
 
----
+Querry:
+* Table Room:
+  INSERT INTO room_type (category, price, max_room_number) VALUES
+  -- 1 người
+  ('SINGLE_1P_STANDARD',  400000, 10),
+  ('SINGLE_1P_DELUXE',    600000, 8),
+  ('SINGLE_1P_SUITE',     900000, 5),
+
+    -- 2 người
+    ('DOUBLE_2P_STANDARD',  700000, 15),
+    ('DOUBLE_2P_DELUXE',   1000000, 12),
+    ('DOUBLE_2P_SUITE',    1500000, 8),
+    
+    -- 3 người
+    ('TRIPLE_3P_STANDARD', 1100000, 10),
+    ('TRIPLE_3P_DELUXE',   1500000, 8),
+    ('TRIPLE_3P_SUITE',    2100000, 6),
+    
+    -- 4 người
+    ('FAMILY_4P_STANDARD', 1600000, 8),
+    ('FAMILY_4P_DELUXE',   2100000, 6),
+    ('FAMILY_4P_SUITE',    2800000, 4);
+    
+    ;WITH Numbers AS (
+    SELECT TOP 50 ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS num
+    FROM sys.objects
+    )
+    INSERT INTO room (room_number, room_type_id, status)
+    SELECT
+    CONCAT(rt.id, RIGHT('00' + CAST(n.num AS VARCHAR(2)), 2)) AS room_number,
+    rt.id,
+    'AVAILABLE'
+    FROM room_type rt
+    JOIN Numbers n
+    ON n.num <= rt.max_room_number
+    ORDER BY rt.id, n.num;
+
+* Table Food
+  INSERT INTO food_type (category) VALUES
+  ('APPETIZER'),
+  ('MAIN_COURSE'),
+  ('DESSERT'),
+  ('DRINK');
+
+    INSERT INTO food (food_name, number, price, food_type_id) VALUES
+    ('Spring Rolls', 50, 50000, 1),
+    ('Caesar Salad', 30, 75000, 1),
+    ('Grilled Chicken', 40, 150000, 2),
+    ('Beef Steak', 20, 220000, 2),
+    ('Chocolate Cake', 25, 90000, 3),
+    ('Fruit Salad', 20, 70000, 3),
+    ('Orange Juice', 50, 45000, 4),
+    ('Coffee', 60, 40000, 4);
 
 ## API Endpoints
 
