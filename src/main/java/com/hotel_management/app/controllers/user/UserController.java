@@ -28,12 +28,26 @@ public class UserController {
         return userService.createUser(request);
     }
 
+    @PostMapping("/staff")
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse createStaff(@RequestBody UserCreateRequest request) {
+        return userService.createStaff(request);
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> updateAdminRole(@PathVariable Integer id) {
+        userService.updateAdminRole(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
     @GetMapping("/customer")
     @PreAuthorize("hasAnyRole('ADMIN','STAFF')")

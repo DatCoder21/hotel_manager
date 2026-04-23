@@ -27,14 +27,6 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
-//    @Override
-//    public UserResponse createUser(UserCreateRequest request) {
-//        User user = modelMapper.map(request, User.class);
-//        user.setRole(Role.CUSTOMER);
-//        User saved = userRepository.save(user);
-//        return modelMapper.map(saved, UserResponse.class);
-//    }
-
     @Override
     public UserResponse createUser(UserCreateRequest request) {
         User user = modelMapper.map(request, User.class);
@@ -47,6 +39,19 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(saved, UserResponse.class);
     }
 
+    @Override
+    public UserResponse createStaff(UserCreateRequest request) {
+        User user = modelMapper.map(request, User.class);
+
+        user.setPassword(passwordEncoder.encode(request.getPassword())); // mã hóa
+
+        user.setRole(Role.STAFF);
+
+        User saved = userRepository.save(user);
+        return modelMapper.map(saved, UserResponse.class);
+    }
+
+
     @Transactional
     @Override
     public void deleteUser(Integer id) {
@@ -57,6 +62,20 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
+    @Transactional
+    @Override
+    public void updateAdminRole(Integer id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getRole() == Role.STAFF) {
+            user.setRole(Role.ADMIN);
+        } else {
+            throw new RuntimeException("Only STAFF can update to ADMIN");
+        }
+
+        userRepository.save(user);
+    }
 
     @Override
     public List<UserResponse> getAllCustomer() {
@@ -84,7 +103,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Wrong password");
         }
 
-        // đúng mật khẩu → tạo JWT
+        // true password → create JWT
         String token = jwtService.generateToken(user.getUsername());
         return new LoginResponse(token);
     }
@@ -102,7 +121,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // cập nhật thông tin
+        // update information
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());

@@ -127,6 +127,23 @@ public class BookingServiceImpl implements BookingService {
         return mapToResponse(booking);
     }
 
+//    @Override
+//    @Transactional
+//    public BookingResponse customerCheckIn(Integer bookingId) {
+//
+//        Booking booking = bookingRepository.findById(bookingId)
+//                .orElseThrow(() -> new RuntimeException("Booking not found"));
+//
+//        booking.setStatus(BookingStatus.CHECKED_IN);
+//
+//        Room room = booking.getRoom();
+//        roomRepository.save(room);
+//
+//        bookingRepository.save(booking);
+//
+//        return mapToResponse(booking);
+//    }
+
     @Override
     @Transactional
     public BookingResponse customerCheckIn(Integer bookingId) {
@@ -134,6 +151,18 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+
+        // Validate thời gian check-in
+        if (today.isBefore(booking.getCheckInDate())) {
+            throw new RuntimeException("The check-in date has not yet arrived.");
+        }
+
+        if (today.isAfter(booking.getCheckOutDate())) {
+            throw new RuntimeException("The booking has expired, check-in is not possible.");
+        }
+
+        // Nếu hợp lệ thì check-in
         booking.setStatus(BookingStatus.CHECKED_IN);
 
         Room room = booking.getRoom();
@@ -151,15 +180,19 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
-        booking.setStatus(BookingStatus.CHECKED_OUT);
+        if(booking.getStatus() == BookingStatus.PAID){
+            booking.setStatus(BookingStatus.CHECKED_OUT);
+            Room room = booking.getRoom();
+            room.setStatus(RoomStatus.AVAILABLE);
+            roomRepository.save(room);
 
-        Room room = booking.getRoom();
-        room.setStatus(RoomStatus.AVAILABLE);
-        roomRepository.save(room);
+            bookingRepository.save(booking);
 
-        bookingRepository.save(booking);
-
-        return mapToResponse(booking);
+            return mapToResponse(booking);
+        }
+        else {
+            throw new RuntimeException("Booking is not Paid, can not checkout");
+        }
     }
 
     @Override

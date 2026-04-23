@@ -11,6 +11,8 @@ import java.util.List;
 public interface UserService {
     UserResponse createUser(UserCreateRequest request);
     void deleteUser(Integer id);
+    void updateAdminRole(Integer id);
+    UserResponse createStaff(UserCreateRequest request);
     List<UserResponse> getAllCustomer();
     List<UserResponse> getAllStaff();
     LoginResponse login(LoginRequest request);
