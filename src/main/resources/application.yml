@@ -14,3 +14,12 @@ spring:
         format_sql: true
     database: sql_server
     database-platform: org.hibernate.dialect.SQLServerDialect
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: nguyenxuanthanhdat2104@gmail.com
+    password: fufo veby jncc zddr
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true

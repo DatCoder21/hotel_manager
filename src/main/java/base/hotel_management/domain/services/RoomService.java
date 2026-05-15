@@ -1,0 +1,21 @@
+package base.hotel_management.domain.services;
+
+import base.hotel_management.app.responses.room.RoomResponse;
+import base.hotel_management.domain.enums.RoomCategory;
+import base.hotel_management.domain.enums.RoomStatus;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public interface RoomService {
+
+    List<RoomResponse> getAllRooms();
+
+    RoomResponse updateRoomStatus(Integer id, RoomStatus status);
+
+    List<RoomResponse> findAvailableRooms(
+            RoomCategory category,
+            LocalDate checkIn,
+            LocalDate checkOut
+    );
+}
